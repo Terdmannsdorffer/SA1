@@ -8,6 +8,23 @@ defmodule Goodreads.Authors do
 
   alias Goodreads.Authors.Author
 
+
+  def list_authors_with_book_counts do
+    from(a in Author,
+      left_join: b in assoc(a, :books),
+      group_by: [a.id, a.name],
+      select: %{
+        id: a.id,
+        name: a.name,
+        book_count: count(b.id)
+      }
+    )
+    |> Repo.all()
+  end
+
+
+
+
   @doc """
   Returns the list of authors.
 

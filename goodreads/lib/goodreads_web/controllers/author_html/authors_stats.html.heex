@@ -1,0 +1,20 @@
+<.header>
+  Listing Authors
+</.header>
+
+<.table id="authors" rows={@authors} row_click={&JS.navigate(~p"/authors/#{&1.id}")}>
+  <:col :let={author} label="Name"><%= author.name %></:col>
+  <:col :let={author} label="Number of Published Books"><%= author.book_count %></:col>
+
+  <:action :let={author}>
+    <div class="sr-only">
+      <.link navigate={~p"/authors/#{author.id}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/authors/#{author.id}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={author}>
+    <.link href={~p"/authors/#{author.id}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

@@ -24,6 +24,8 @@ defmodule GoodreadsWeb.Router do
     resources "/reviews", ReviewController
     resources "/sales", SaleController
 
+    get "/authors_stats", AuthorController, :authors_stats
+
     get "/top_books", BookController, :top_books
 
   end
