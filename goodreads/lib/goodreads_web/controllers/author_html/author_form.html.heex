@@ -1,0 +1,12 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:date_of_birth]} type="date" label="Date of birth" />
+  <.input field={f[:country_of_origin]} type="text" label="Country of origin" />
+  <.input field={f[:short_description]} type="text" label="Short description" />
+  <:actions>
+    <.button>Save Author</.button>
+  </:actions>
+</.simple_form>
