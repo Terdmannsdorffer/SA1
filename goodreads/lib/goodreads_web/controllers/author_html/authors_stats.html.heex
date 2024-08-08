@@ -6,16 +6,8 @@
   <:col :let={author} label="Name"><%= author.name %></:col>
   <:col :let={author} label="Number of Published Books"><%= author.book_count %></:col>
   <:col :let={author} label="Average Score"><%= if author.average_score, do: author.average_score, else: "N/A" %></:col>
+  <:col :let={author} label="Total Sales"><%= author.total_sales %></:col>
 
-  <:action :let={author}>
-    <div class="sr-only">
-      <.link navigate={~p"/authors/#{author.id}"}>Show</.link>
-    </div>
-    <.link navigate={~p"/authors/#{author.id}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={author}>
-    <.link href={~p"/authors/#{author.id}"} method="delete" data-confirm="Are you sure?">
-      Delete
-    </.link>
-  </:action>
+
+
 </.table>

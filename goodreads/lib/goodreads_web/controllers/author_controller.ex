@@ -63,22 +63,15 @@ defmodule GoodreadsWeb.AuthorController do
     |> redirect(to: ~p"/authors")
   end
 
-  def list_authors_with_book_counts do
-    from(a in Author,
-      left_join: b in assoc(a, :books),
-      group_by: [a.id, a.name],
-      select: %{
-        id: a.id,
-        name: a.name,
-        book_count: count(b.id)
-      }
-    )
-    |> Repo.all()
-  end
+
   def authors_stats(conn, _params) do
-    authors = Authors.list_authors_with_book_counts()
+    authors = Authors.list_authors_with_book_counts_and_sales()
     render(conn, "authors_stats.html", authors: authors)
   end
 
+  def top_50(conn, _params) do
+    books = Authors.list_top_50_books_by_sales()
+    render(conn, "top_50.html", books: books)
+  end
 
 end

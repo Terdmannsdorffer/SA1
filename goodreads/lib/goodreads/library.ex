@@ -7,6 +7,7 @@ defmodule Goodreads.Library do
   alias Goodreads.Repo
 
   alias Goodreads.Library.Book
+alias Goodreads.Reviews.Review
 
   @doc """
   Returns the list of books.
@@ -108,5 +109,20 @@ defmodule Goodreads.Library do
     |> limit(50)
     |> preload(:author)
     |> Repo.all()
+  end
+
+  def top_10_books_with_reviews do
+    Book
+    |> order_by([b], desc: b.number_of_sales)
+    |> limit(10)
+    |> Repo.all()
+    |> Repo.preload([:author, reviews: from(r in Review, order_by: [desc: r.number_of_up_votes, desc: r.score])])
+    |> Enum.map(fn book ->
+      %{
+        book: book,
+        highest_rated_review: Enum.max_by(book.reviews, & &1.score),
+        lowest_rated_review: Enum.min_by(book.reviews, & &1.score)
+      }
+    end)
   end
 end

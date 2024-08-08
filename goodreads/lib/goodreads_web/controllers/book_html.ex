@@ -1,6 +1,7 @@
 defmodule GoodreadsWeb.BookHTML do
   use GoodreadsWeb, :html
-
+  import Phoenix.HTML
+  import Phoenix.HTML.Form
   embed_templates "book_html/*"
 
   @doc """

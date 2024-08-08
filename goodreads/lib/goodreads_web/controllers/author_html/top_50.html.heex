@@ -1,0 +1,11 @@
+<.header>
+  Top 50 Books by Sales
+</.header>
+
+<.table id="books" rows={@books} row_click={&JS.navigate(~p"/books/#{&1.id}")}>
+  <:col :let={book} label="Name"><%= book.name %></:col>
+  <:col :let={book} label="Author"><%= book.author_name %></:col>
+  <:col :let={book} label="Author's Total Sales"><%= book.author_total_sales %></:col>
+  <:col :let={book} label="Total Sales"><%= book.total_sales %></:col>
+  <:col :let={book} label="Top 5 in Publication Year"><%= book.top_5_status %></:col>
+</.table>

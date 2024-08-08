@@ -4,7 +4,7 @@ defmodule GoodreadsWeb.ReviewController do
   alias Goodreads.Reviews
   alias Goodreads.Reviews.Review
   alias Goodreads.Library.Book
-
+  alias Goodreads.Repo
 
   def index(conn, _params) do
     reviews = Goodreads.Repo.all(Goodreads.Reviews.Review) |> Goodreads.Repo.preload(:book)
@@ -66,4 +66,20 @@ defmodule GoodreadsWeb.ReviewController do
     |> put_flash(:info, "Review deleted successfully.")
     |> redirect(to: ~p"/reviews")
   end
+
+
+  # def top_10_books_with_reviews do
+  #   Book
+  #   |> order_by([b], desc: b.number_of_sales)
+  #   |> limit(10)
+  #   |> Repo.all()
+  #   |> Repo.preload([:author, reviews: from(r in Review, order_by: [desc: r.number_of_up_votes, desc: r.score])])
+  #   |> Enum.map(fn book ->
+  #     %{
+  #       book: book,
+  #       highest_rated_review: Enum.max_by(book.reviews, & &1.score),
+  #       lowest_rated_review: Enum.min_by(book.reviews, & &1.score)
+  #     }
+  #   end)
+  # end
 end

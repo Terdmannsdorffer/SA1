@@ -1,0 +1,52 @@
+<h1>Top 10 Rated Books of All Time</h1>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Book Name</th>
+      <th>Author</th>
+      <th>Highest Rated Review</th>
+      <th>Lowest Rated Review</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for %{book: book, highest_rated_review: highest, lowest_rated_review: lowest} <- @books_with_reviews do %>
+      <tr>
+        <td><%= book.name %></td>
+        <td><%= book.author.name %></td>
+        <td>
+          <strong>Score:</strong> <%= highest.score %><br>
+          <strong>Review:</strong> <%= highest.review %><br>
+          <strong>Upvotes:</strong> <%= highest.number_of_up_votes %>
+        </td>
+        <td>
+          <strong>Score:</strong> <%= lowest.score %><br>
+          <strong>Review:</strong> <%= lowest.review %><br>
+          <strong>Upvotes:</strong> <%= lowest.number_of_up_votes %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
