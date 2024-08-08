@@ -3,6 +3,6 @@
   <:subtitle>Use this form to manage review records in your database.</:subtitle>
 </.header>
 
-<.review_form changeset={@changeset} action={~p"/reviews/#{@review}"} />
+<.review_form changeset={@changeset} action={~p"/reviews/#{@review}"}  books={@books}/>
 
 <.back navigate={~p"/reviews"}>Back to reviews</.back>

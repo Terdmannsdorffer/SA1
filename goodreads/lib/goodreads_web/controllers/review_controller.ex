@@ -3,18 +3,24 @@ defmodule GoodreadsWeb.ReviewController do
 
   alias Goodreads.Reviews
   alias Goodreads.Reviews.Review
+  alias Goodreads.Library.Book
+
 
   def index(conn, _params) do
-    reviews = Reviews.list_reviews()
+    reviews = Goodreads.Repo.all(Goodreads.Reviews.Review) |> Goodreads.Repo.preload(:book)
     render(conn, :index, reviews: reviews)
   end
 
   def new(conn, _params) do
-    changeset = Reviews.change_review(%Review{})
-    render(conn, :new, changeset: changeset)
+    books = Goodreads.Repo.all(Goodreads.Library.Book)
+    changeset = Goodreads.Reviews.Review.changeset(%Goodreads.Reviews.Review{}, %{})
+    render(conn, "new.html", changeset: changeset, books: books)
   end
 
+
+
   def create(conn, %{"review" => review_params}) do
+    books = Goodreads.Repo.all(Goodreads.Library.Book)
     case Reviews.create_review(review_params) do
       {:ok, review} ->
         conn
@@ -22,7 +28,7 @@ defmodule GoodreadsWeb.ReviewController do
         |> redirect(to: ~p"/reviews/#{review}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, "new.html", changeset: changeset, books: books)
     end
   end
 
@@ -32,9 +38,10 @@ defmodule GoodreadsWeb.ReviewController do
   end
 
   def edit(conn, %{"id" => id}) do
+    books = Goodreads.Repo.all(Goodreads.Library.Book)
     review = Reviews.get_review!(id)
     changeset = Reviews.change_review(review)
-    render(conn, :edit, review: review, changeset: changeset)
+    render(conn, :edit, review: review, changeset: changeset, books: books)
   end
 
   def update(conn, %{"id" => id, "review" => review_params}) do

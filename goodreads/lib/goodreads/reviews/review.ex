@@ -6,7 +6,8 @@ defmodule Goodreads.Reviews.Review do
     field :review, :string
     field :score, :integer
     field :number_of_up_votes, :integer
-    field :book_id, :id
+
+    belongs_to :book, Goodreads.Library.Book
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +15,7 @@ defmodule Goodreads.Reviews.Review do
   @doc false
   def changeset(review, attrs) do
     review
-    |> cast(attrs, [:review, :score, :number_of_up_votes])
-    |> validate_required([:review, :score, :number_of_up_votes])
+    |> cast(attrs, [:review, :score, :number_of_up_votes, :book_id])
+    |> validate_required([:review, :score, :number_of_up_votes, :book_id])
   end
 end

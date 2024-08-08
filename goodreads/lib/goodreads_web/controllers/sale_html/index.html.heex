@@ -1,0 +1,25 @@
+<.header>
+  Listing Sales
+  <:actions>
+    <.link href={~p"/sales/new"}>
+      <.button>New Sale</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="sales" rows={@sales} row_click={&JS.navigate(~p"/sales/#{&1}")}>
+  <:col :let={sale} label="Year"><%= sale.year %></:col>
+  <:col :let={sale} label="Sales"><%= sale.sales %></:col>
+  <:col :let={sale} label="Book"><%= sale.book.name %></:col>
+  <:action :let={sale}>
+    <div class="sr-only">
+      <.link navigate={~p"/sales/#{sale}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/sales/#{sale}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={sale}>
+    <.link href={~p"/sales/#{sale}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

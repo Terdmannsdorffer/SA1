@@ -9,7 +9,8 @@ defmodule Goodreads.Library.Book do
     field :number_of_sales, :integer
 
     belongs_to :author, Goodreads.Authors.Author
-    has_many :reviews, Goodreads.Library.Review
+    has_many :reviews, Goodreads.Reviews.Review
+    has_many :sales, Goodreads.Sales.Sale
 
     timestamps(type: :utc_datetime)
   end

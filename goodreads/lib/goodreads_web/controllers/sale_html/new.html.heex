@@ -1,0 +1,8 @@
+<.header>
+  New Sale
+  <:subtitle>Use this form to manage sale records in your database.</:subtitle>
+</.header>
+
+<.sale_form changeset={@changeset} action={~p"/sales"} books={@books} />
+
+<.back navigate={~p"/sales"}>Back to sales</.back>

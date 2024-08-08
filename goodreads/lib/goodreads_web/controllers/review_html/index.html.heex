@@ -11,6 +11,7 @@
   <:col :let={review} label="Review"><%= review.review %></:col>
   <:col :let={review} label="Score"><%= review.score %></:col>
   <:col :let={review} label="Number of up votes"><%= review.number_of_up_votes %></:col>
+  <:col :let={review} label="Book"><%= review.book.name %></:col>
   <:action :let={review}>
     <div class="sr-only">
       <.link navigate={~p"/reviews/#{review}"}>Show</.link>

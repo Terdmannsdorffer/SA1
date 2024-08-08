@@ -5,6 +5,7 @@
   <.input field={f[:review]} type="text" label="Review" />
   <.input field={f[:score]} type="number" label="Score" />
   <.input field={f[:number_of_up_votes]} type="number" label="Number of up votes" />
+  <.input field={f[:book_id]} type="select" label="Book" options={Enum.map(@books, &{&1.name, &1.id})} />
   <:actions>
     <.button>Save Review</.button>
   </:actions>
