@@ -30,7 +30,7 @@ authors =
     }
     |> Repo.insert!()
   end
-
+  IO.puts("Seed data inserted successfully")
 # Seed books
 books =
   for _ <- 1..300 do

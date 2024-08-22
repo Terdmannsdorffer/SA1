@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: goodreads_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "ecto://postgres:1234@db/goodreads_dev"
+      SECRET_KEY_BASE: "5nx5fKQAMVUJz/HPujWl6CgZuKjI2Fng7+5fXQdwNGzRoQSvAhTz3DFRN68K1Jpc"
+      MIX_ENV: prod
+    depends_on:
+      - db
+    entrypoint: ["sh", "/app/entrypoint.sh"]
+
+volumes:
+  postgres_data:

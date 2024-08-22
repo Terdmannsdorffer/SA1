@@ -7,6 +7,7 @@
 # General application configuration
 import Config
 
+#ecto://postgres:postgres@db:5432/goodreads_dev
 config :goodreads,
   ecto_repos: [Goodreads.Repo],
   generators: [timestamp_type: :utc_datetime]
@@ -21,6 +22,12 @@ config :goodreads, GoodreadsWeb.Endpoint,
   ],
   pubsub_server: Goodreads.PubSub,
   live_view: [signing_salt: "M8D6Bmm5"]
+
+
+  config :goodreads, Goodreads.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL") || "ecto://postgres:1234@db/goodreads_dev",
+  pool_size: 10
 
 # Configures the mailer
 #
@@ -41,7 +48,6 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-# Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",
   goodreads: [
@@ -52,7 +58,6 @@ config :tailwind,
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

@@ -1,0 +1,11 @@
+# Ignore Elixir build artifacts
+/_build
+
+
+# Ignore node_modules
+/assets/node_modules
+
+# Ignore other unnecessary files
+/.git
+/.gitignore
+/docker-compose.yml
