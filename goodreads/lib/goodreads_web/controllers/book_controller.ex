@@ -237,14 +237,26 @@ defmodule GoodreadsWeb.BookController do
 
 
   # Función para filtrar libros basados en la consulta
-  defp filter_books_by_query(books, query) do
-    query_lower = String.downcase(query)
+  def filter_books_by_query(books, query) do
+    # Normalize query to ensure it is a string
+    normalized_query =
+      case query do
+        nil -> ""
+        _ -> String.downcase(query)
+      end
 
-    Enum.filter(books, fn book ->
-      summary_lower = String.downcase(book["summary"])
-      String.contains?(summary_lower, query_lower)
-    end)
+    # Filter books only if query is not empty
+    if normalized_query != "" do
+      Enum.filter(books, fn book ->
+        # Assuming you want to filter by book summary
+        String.contains?(String.downcase(book["summary"] || ""), normalized_query)
+      end)
+    else
+      # If query is empty, return all books
+      books
+    end
   end
+
 
 
   defp handle_file_upload(params) do
