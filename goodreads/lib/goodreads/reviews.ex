@@ -5,6 +5,7 @@ defmodule Goodreads.Reviews do
 
   import Ecto.Query, warn: false
   alias Goodreads.Repo
+  alias Goodreads.Cache
 
   alias Goodreads.Reviews.Review
 
@@ -35,7 +36,19 @@ defmodule Goodreads.Reviews do
       ** (Ecto.NoResultsError)
 
   """
-  def get_review!(id), do: Repo.get!(Review, id)
+  def get_review!(id) do
+    cached_score = Cache.get("review_score:#{id}")
+
+    review = Repo.get!(Review, id)
+
+    if cached_score == nil do
+      Cache.set("review_score:#{id}", Integer.to_string(review.score))
+    else
+      review = %{review | score: String.to_integer(cached_score)}
+    end
+
+    review
+  end
 
   @doc """
   Creates a review.
@@ -68,9 +81,15 @@ defmodule Goodreads.Reviews do
 
   """
   def update_review(%Review{} = review, attrs) do
-    review
+    case review
     |> Review.changeset(attrs)
-    |> Repo.update()
+    |> Repo.update() do
+      {:ok, update_review} ->
+        Cache.set("review_score:#{update_review.id}", Integer.to_string(update_review.score))
+      {:ok, update_review}
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -86,7 +105,12 @@ defmodule Goodreads.Reviews do
 
   """
   def delete_review(%Review{} = review) do
-    Repo.delete(review)
+    case Repo.delete(review) do
+      {:ok, _deleted_review} ->
+      Cached.delete("review_score:#{review.id}")
+      {:ok, review}
+      error -> error
+    end
   end
 
   @doc """

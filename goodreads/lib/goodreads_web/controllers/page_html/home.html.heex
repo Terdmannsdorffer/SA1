@@ -1,49 +1,80 @@
-<h1>Welcome to Goodreads</h1>
+<h1 class="welcome-header">Welcome to Goodreads</h1>
 
 <div class="button-container">
   <div>
-    <.back navigate={~p"/authors"}>Authors</.back>
+    <.back class="btn" navigate={~p"/authors"}>Authors</.back>
   </div>
   <div>
-    <.back navigate={~p"/books"}>Books</.back>
+    <.back class="btn" navigate={~p"/books"}>Books</.back>
   </div>
   <div>
-    <.back navigate={~p"/reviews"}>Reviews</.back>
+    <.back class="btn" navigate={~p"/reviews"}>Reviews</.back>
   </div>
   <div>
-    <.back navigate={~p"/sales"}>Sales</.back>
+    <.back class="btn" navigate={~p"/sales"}>Sales</.back>
   </div>
   <div>
-    <.back navigate={~p"/authors_stats"}>Author Stats</.back>
+    <.back class="btn" navigate={~p"/authors_stats"}>Author Stats</.back>
   </div>
   <div>
-    <.back navigate={~p"/top_50"}>Top 50 Authors</.back>
+    <.back class="btn" navigate={~p"/top_50"}>Top 50 Authors</.back>
   </div>
-
   <div>
-    <.back navigate={~p"/top_books_with_reviews"}>Top 10 Books with Reviews</.back>
+    <.back class="btn" navigate={~p"/search"}>Search Books</.back>
+  </div>
+  <div>
+    <.back class="btn" navigate={~p"/top_books_with_reviews"}>Top 10 Books with Reviews</.back>
   </div>
 </div>
 
 <style>
-  .button-container {
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
   }
-  .button-container div {
-    flex: 1 1 200px; /* Adjust the width of each button */
-  }
-  .btn {
-    display: block;
+
+  .welcome-header {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
     text-align: center;
-    padding: 10px;
+  }
+
+  .button-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .button-container div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 15px 25px;
     background-color: #007bff;
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
     text-decoration: none;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+
   .btn:hover {
     background-color: #0056b3;
+    cursor: pointer;
   }
 </style>

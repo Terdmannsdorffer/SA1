@@ -16,7 +16,7 @@
     <div class="sr-only">
       <.link navigate={~p"/authors/#{author}"}>Show</.link>
     </div>
-    <.link navigate={~p"/authors/#{author}/edit"}>Edit</.link>
+    
   </:action>
   <:action :let={author}>
     <.link href={~p"/authors/#{author}"} method="delete" data-confirm="Are you sure?">

@@ -31,7 +31,6 @@ services:
       OPENSEARCH_URL: "http://opensearch-node1:9600"
       OPENSEARCH_USERNAME: "admin"
       OPENSEARCH_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
-      REVERSE_PROXY: "true"
     depends_on:
       - db
       - redis
@@ -50,6 +49,7 @@ services:
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
       - plugins.security.disabled=true 
+      
     ulimits:
       memlock:
         soft: -1
@@ -96,17 +96,10 @@ services:
       OPENSEARCH_HOSTS: '["http://opensearch-node1:9200","http://opensearch-node2:9200"]'
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: false
 
-  haproxy:
-    image: haproxy:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-    depends_on:
-      - web
-
 volumes:
   postgres_data:
   opensearch-data1:
   opensearch-data2:
 
+networks:
+  opensearch-net:

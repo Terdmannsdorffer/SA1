@@ -10,6 +10,7 @@ defmodule Goodreads.Application do
     children = [
       GoodreadsWeb.Telemetry,
       Goodreads.Repo,
+      {Redix, name: :redix, host: "redis", port: 6379},
       {DNSCluster, query: Application.get_env(:goodreads, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Goodreads.PubSub},
       # Start the Finch HTTP client for sending emails

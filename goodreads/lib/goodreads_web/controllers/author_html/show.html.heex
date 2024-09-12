@@ -1,8 +1,8 @@
 <.header>
   Author <%= @author.id %>
-  <:subtitle>This is a author record from your database.</:subtitle>
+  <:subtitle>This is an author record from your database.</:subtitle>
   <:actions>
-    <.link href={~p"/authors/#{@author}/edit"}>
+    <.link href={~p"/authors/#{@author.id}/edit"}>
       <.button>Edit author</.button>
     </.link>
   </:actions>

@@ -5,27 +5,33 @@ defmodule GoodreadsWeb.ReviewController do
   alias Goodreads.Reviews.Review
   alias Goodreads.Library.Book
   alias Goodreads.Repo
+  alias Goodreads.OpensearchClient
 
   def index(conn, _params) do
-    reviews = Goodreads.Repo.all(Goodreads.Reviews.Review) |> Goodreads.Repo.preload(:book)
+    reviews = Repo.all(Review) |> Repo.preload(:book)
     render(conn, :index, reviews: reviews)
   end
 
   def new(conn, _params) do
-    books = Goodreads.Repo.all(Goodreads.Library.Book)
-    changeset = Goodreads.Reviews.Review.changeset(%Goodreads.Reviews.Review{}, %{})
+    books = Repo.all(Book)
+    changeset = Review.changeset(%Review{}, %{})
     render(conn, "new.html", changeset: changeset, books: books)
   end
 
-
-
   def create(conn, %{"review" => review_params}) do
-    books = Goodreads.Repo.all(Goodreads.Library.Book)
+    books = Repo.all(Book)
     case Reviews.create_review(review_params) do
       {:ok, review} ->
+        # Index the new review in OpenSearch
+        OpensearchClient.index_document("reviews", review.id, %{
+          book_id: review.book_id,
+          content: review.review
+        })
+
         conn
         |> put_flash(:info, "Review created successfully.")
-        |> redirect(to: ~p"/reviews/#{review}")
+        |> redirect(to: ~p"/reviews/#{review.id}")
+
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset, books: books)
@@ -38,7 +44,7 @@ defmodule GoodreadsWeb.ReviewController do
   end
 
   def edit(conn, %{"id" => id}) do
-    books = Goodreads.Repo.all(Goodreads.Library.Book)
+    books = Repo.all(Book)
     review = Reviews.get_review!(id)
     changeset = Reviews.change_review(review)
     render(conn, :edit, review: review, changeset: changeset, books: books)
@@ -49,12 +55,18 @@ defmodule GoodreadsWeb.ReviewController do
 
     case Reviews.update_review(review, review_params) do
       {:ok, review} ->
+        # Update the review in OpenSearch
+        OpensearchClient.index_document("reviews", review.id, %{
+          book_id: review.book_id,
+          content: review.review
+        })
+
         conn
         |> put_flash(:info, "Review updated successfully.")
-        |> redirect(to: ~p"/reviews/#{review}")
+        |> redirect(to: ~p"/reviews/#{review.id}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, review: review, changeset: changeset)
+        render(conn, "edit.html", review: review, changeset: changeset)
     end
   end
 
@@ -62,24 +74,24 @@ defmodule GoodreadsWeb.ReviewController do
     review = Reviews.get_review!(id)
     {:ok, _review} = Reviews.delete_review(review)
 
+    # Delete the review from OpenSearch
+    OpensearchClient.delete_document("reviews", review.id)
+
     conn
     |> put_flash(:info, "Review deleted successfully.")
     |> redirect(to: ~p"/reviews")
   end
 
+  def search(conn, %{"query" => query}) do
+    case OpensearchClient.search("reviews", %{query: %{match: %{content: query}}}) do
+      {:ok, results} ->
+        reviews = Enum.map(results["hits"]["hits"], &(&1["_source"]))
+        render(conn, "search_results.html", reviews: reviews, query: query)
 
-  # def top_10_books_with_reviews do
-  #   Book
-  #   |> order_by([b], desc: b.number_of_sales)
-  #   |> limit(10)
-  #   |> Repo.all()
-  #   |> Repo.preload([:author, reviews: from(r in Review, order_by: [desc: r.number_of_up_votes, desc: r.score])])
-  #   |> Enum.map(fn book ->
-  #     %{
-  #       book: book,
-  #       highest_rated_review: Enum.max_by(book.reviews, & &1.score),
-  #       lowest_rated_review: Enum.min_by(book.reviews, & &1.score)
-  #     }
-  #   end)
-  # end
+      {:error, _reason} ->
+        # Fallback to database search if OpenSearch fails
+        reviews = Reviews.search_reviews(query)
+        render(conn, "search_results.html", reviews: reviews, query: query)
+    end
+  end
 end

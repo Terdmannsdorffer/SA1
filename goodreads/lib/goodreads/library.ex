@@ -111,6 +111,28 @@ alias Goodreads.Reviews.Review
     |> Repo.all()
   end
 
+  def search_books(query) do
+    Book
+    |> where([b], ilike(b.summary, ^"%#{query}%"))
+    |> preload(:author) # Pre-carga la asociación :author
+    |> limit(10) # Limita los resultados a 10
+    |> Repo.all()
+  end
+
+  def update_books_author(author_id, attrs) do
+    Book
+    |> where([b], b.author_id == ^author_id)
+    |> Repo.update_all(set: [author_name: attrs["name"], author_country_of_origin: attrs["country_of_origin"]])
+  end
+
+
+  defp build_query(query) do
+    from b in Book,
+      where: ilike(b.summary, ^"%#{query}%"),
+      select: b
+  end
+
+
   def top_10_books_with_reviews do
     Book
     |> order_by([b], desc: b.number_of_sales)

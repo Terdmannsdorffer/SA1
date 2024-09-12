@@ -5,13 +5,10 @@ defmodule Goodreads.Authors do
 
   import Ecto.Query, warn: false
   alias Goodreads.Repo
-
   alias Goodreads.Authors.Author
   alias Goodreads.Library.Book
   alias Goodreads.Sales.Sale
-
-
-
+  alias Goodreads.Cache
 
   def list_authors_with_book_counts_and_sales do
     from(a in Author,
@@ -30,40 +27,7 @@ defmodule Goodreads.Authors do
     |> Repo.all()
   end
 
-
-  # def list_top_50_books_by_sales do
-  #   # Subconsulta para obtener el total de ventas por autor
-  #   subquery = from(a in Author,
-  #     left_join: b in assoc(a, :books),
-  #     left_join: s in assoc(b, :sales),
-  #     group_by: a.id,
-  #     select: %{
-  #       id: a.id,
-  #       total_sales: coalesce(sum(s.sales), 0)
-  #     }
-  #   )
-
-  #   from(b in Book,
-  #     left_join: a in assoc(b, :author),
-  #     left_join: s in assoc(b, :sales),
-  #     left_join: sub in subquery(subquery),
-  #     on: a.id == sub.id,
-  #     group_by: [b.id, a.id, sub.total_sales],
-  #     select: %{
-  #       id: b.id,
-  #       name: b.name,
-  #       total_sales: coalesce(sum(s.sales), 0),
-  #       author_name: a.name,
-  #       author_total_sales: sub.total_sales
-  #     },
-  #     order_by: [desc: coalesce(sum(s.sales), 0)],
-  #     limit: 50
-  #   )
-  #   |> Repo.all()
-  # end
-
   def list_top_50_books_by_sales do
-    # Subconsulta para obtener el top 5 ventas por año
     top_5_per_year_subquery = from(s in Sale,
       group_by: [s.year, s.book_id],
       select: %{
@@ -75,7 +39,6 @@ defmodule Goodreads.Authors do
     )
     |> subquery()
 
-    # Subconsulta para marcar si el libro estuvo en el top 5
     top_5_books_subquery = from(b in Book,
       join: s in assoc(b, :sales),
       join: top_5 in ^top_5_per_year_subquery,
@@ -109,98 +72,68 @@ defmodule Goodreads.Authors do
     |> Repo.all()
   end
 
-
-
-  @doc """
-  Returns the list of authors.
-
-  ## Examples
-
-      iex> list_authors()
-      [%Author{}, ...]
-
-  """
   def list_authors do
     Repo.all(Author)
   end
 
-  @doc """
-  Gets a single author.
+  def get_author!(id) do
+    cached_author = Cache.get("author_info:#{id}")
 
-  Raises `Ecto.NoResultsError` if the Author does not exist.
+    if cached_author do
+      {:ok, author_data} = Jason.decode(cached_author)
+      struct(Author, author_data)
+    else
+      author = Repo.get!(Author, id)
 
-  ## Examples
+      author_data = %{
+        id: author.id,
+        name: author.name,
+        date_of_birth: author.date_of_birth,
+        country_of_origin: author.country_of_origin,
+        short_description: author.short_description
+      }
 
-      iex> get_author!(123)
-      %Author{}
+      Cache.set_with_ttl("author_info:#{id}", Jason.encode!(author_data), 3600)
+      author
+    end
+  end
 
-      iex> get_author!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_author!(id), do: Repo.get!(Author, id)
-
-  @doc """
-  Creates a author.
-
-  ## Examples
-
-      iex> create_author(%{field: value})
-      {:ok, %Author{}}
-
-      iex> create_author(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_author(attrs \\ %{}) do
-    %Author{}
+    case %Author{}
     |> Author.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert() do
+      {:ok, author} ->
+        Cache.delete("author_info:#{author.id}")  # Clear cache in case of retries
+        {:ok, author}
+      error ->
+        error
+    end
   end
 
-  @doc """
-  Updates a author.
-
-  ## Examples
-
-      iex> update_author(author, %{field: new_value})
-      {:ok, %Author{}}
-
-      iex> update_author(author, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_author(%Author{} = author, attrs) do
-    author
-    |> Author.changeset(attrs)
-    |> Repo.update()
+    case author
+         |> Author.changeset(attrs)
+         |> Repo.update() do
+      {:ok, updated_author} ->
+        Cache.delete("author_info:#{updated_author.id}")
+        {:ok, updated_author}
+
+      error ->
+        error
+    end
   end
 
-  @doc """
-  Deletes a author.
-
-  ## Examples
-
-      iex> delete_author(author)
-      {:ok, %Author{}}
-
-      iex> delete_author(author)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_author(%Author{} = author) do
-    Repo.delete(author)
+    case Repo.delete(author) do
+      {:ok, _deleted_author} ->
+        Cache.delete("author_info:#{author.id}")
+        {:ok, author}
+
+      error ->
+        error
+    end
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking author changes.
-
-  ## Examples
-
-      iex> change_author(author)
-      %Ecto.Changeset{data: %Author{}}
-
-  """
   def change_author(%Author{} = author, attrs \\ %{}) do
     Author.changeset(author, attrs)
   end

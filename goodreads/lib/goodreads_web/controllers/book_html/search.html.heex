@@ -1,0 +1,141 @@
+<%!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Libros</title>
+</head>
+<body>
+  <h1>Buscar Libros</h1>
+  <form action="/search" method="get">
+  <input type="text" name="query" placeholder="Buscar libros..." value={@query || ""} required>
+    <button type="submit">Buscar</button>
+  </form>
+
+  <ul>
+    <%= if @query && @books == [] do %>
+      <li>No se encontraron libros para "<%= @query %>".</li>
+    <% else %>
+      <%= for book <- @books do %>
+        <li>
+          <h2><%= book.name %></h2>
+          <p><%= book.summary %></p>
+          <p><strong>Autor:</strong> <%= book.author.name %></p>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</body>
+</html> --%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Libros</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    li {
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    li h2 {
+      margin: 0;
+      color: #007bff;
+    }
+
+    li p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    li strong {
+      color: #333;
+    }
+
+    .no-results {
+      color: #ff0000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Buscar Libros</h1>
+  <form action="/search" method="get">
+    <input type="text" name="query" placeholder="Buscar libros..." value={@query || ""} required>
+    <button type="submit">Buscar</button>
+  </form>
+
+  <ul>
+    <%= if @query && @books == [] do %>
+      <li class="no-results">No se encontraron libros para "<%= @query %>".</li>
+    <% else %>
+      <%= for book <- @books do %>
+        <li>
+          <h2><%= book.name %></h2>
+          <p><%= book.summary %></p>
+          <p><strong>Autor:</strong> <%= book.author.name %></p>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</body>
+</html>

@@ -13,11 +13,21 @@
 alias Goodreads.{Repo, Library.Book, Sales.Sale, Reviews.Review, Authors.Author}
 import Ecto.Query
 import Faker
-
+require Logger
 
 random_integer = fn min, max ->
   :rand.uniform(max - min + 1) + min - 1
 end
+
+
+
+# Borrar todos los datos existentes
+Repo.delete_all(Review)
+Repo.delete_all(Sale)
+Repo.delete_all(Book)
+Repo.delete_all(Author)
+
+
 
 # Seed authors
 authors =

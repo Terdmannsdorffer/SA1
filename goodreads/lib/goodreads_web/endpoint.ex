@@ -34,6 +34,14 @@ defmodule GoodreadsWeb.Endpoint do
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :goodreads
   end
 
+  if Application.get_env(:goodreads, :reverse_proxy) do
+    plug Plug.Static,
+      at: "/",
+      from: :goodreads,
+      gzip: false,
+      only: ~w(css fonts images js favicon.ico robots.txt)
+  end
+
   plug Phoenix.LiveDashboard.RequestLogger,
     param_key: "request_logger",
     cookie_key: "request_logger"

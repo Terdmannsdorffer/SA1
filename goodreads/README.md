@@ -1,13 +1,9 @@
 # Goodreads
 
 To start your Phoenix server:
+ you can just run docker compose up --build when runing the build for the first time or docker compose up for the following runs, when changing the docke rcompose file you MUST run docker compose uo --build again.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+ You can find the different docker compose files requested for the assignment in goodreads\lib\goodreads\compose_files
 
 ## Learn more
 
